@@ -14,11 +14,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           registry-url: "https://registry.npmjs.org"
+
+      - name: Run tests
+        run: go test ./...
 
       - name: Sync version from tag
         run: |
@@ -26,8 +34,11 @@ jobs:
           echo "Publishing version: $VERSION"
           npm version "$VERSION" --no-git-tag-version --allow-same-version
 
+      - name: Build Windows package binary
+        run: npm run prepack
+
       - name: Publish to npm
-        run: npm publish
+        run: npm publish --ignore-scripts
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -46,4 +57,5 @@ jobs:
           name: ${{ github.ref_name }}
           body: ${{ env.RELEASE_BODY }}
           generate_release_notes: false
+          files: rainhush.exe
 

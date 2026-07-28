@@ -396,16 +396,16 @@ func (ctx *buildContext) renderPost(tmpl *template.Template, post *Post) error {
 	canonicalURL := strings.TrimRight(config.Cfg.Site.URL, "/") + "/articles/" + post.Filename + "/"
 	return ctx.writeHTML(tmpl, filepath.Join(dir, "index.html"), ctx.pageData(map[string]interface{}{
 		"CanonicalURL": canonicalURL,
-		"Title":      post.Title,
-		"Author":     post.Author,
-		"Date":       post.Date,
-		"UpdatedAt":  post.UpdatedAt,
-		"Location":   post.Location,
-		"Avatar":     post.Avatar,
-		"Cover":      post.Cover,
-		"Content":    post.Content,
-		"HasMermaid": post.HasMermaid,
-		"Nav":        navArticles,
+		"Title":        post.Title,
+		"Author":       post.Author,
+		"Date":         post.Date,
+		"UpdatedAt":    post.UpdatedAt,
+		"Location":     post.Location,
+		"Avatar":       post.Avatar,
+		"Cover":        post.Cover,
+		"Content":      post.Content,
+		"HasMermaid":   post.HasMermaid,
+		"Nav":          navArticles,
 	}))
 }
 
@@ -445,11 +445,11 @@ func (ctx *buildContext) renderIndex(tmpl *template.Template, posts []*Post) err
 		"LifePosts":        lifePosts,
 		"HasBoth":          hasBoth,
 		"Nav":              navHome,
-		"HeatmapCells": cells,
+		"HeatmapCells":     cells,
 		"HeatmapDayLabels": dl,
 		"HeatmapMonths":    ml,
-		"HeatmapTotal": ht,
-		"CanonicalURL": strings.TrimRight(config.Cfg.Site.URL, "/") + "/",
+		"HeatmapTotal":     ht,
+		"CanonicalURL":     strings.TrimRight(config.Cfg.Site.URL, "/") + "/",
 	}))
 }
 
@@ -500,16 +500,16 @@ func (ctx *buildContext) renderArticles(tmpl *template.Template, posts []*Post) 
 		}
 
 		if err := ctx.writeHTML(tmpl, outPath, ctx.pageData(map[string]interface{}{
-			"Title":      "Articles",
-			"Posts":      posts[start:end],
-			"Page":       page,
-			"TotalPages": totalPages,
-			"TotalPosts": len(posts),
-			"HasPrev":    page > 1,
-			"PrevURL":    prevURL,
-			"HasNext":    page < totalPages,
-			"NextURL":    nextURL,
-			"PageItems":  pageItems,
+			"Title":        "Articles",
+			"Posts":        posts[start:end],
+			"Page":         page,
+			"TotalPages":   totalPages,
+			"TotalPosts":   len(posts),
+			"HasPrev":      page > 1,
+			"PrevURL":      prevURL,
+			"HasNext":      page < totalPages,
+			"NextURL":      nextURL,
+			"PageItems":    pageItems,
 			"CanonicalURL": canonicalURL,
 			"Nav":          navArticles,
 		})); err != nil {
@@ -537,10 +537,10 @@ func (ctx *buildContext) renderAbout() error {
 	canonicalURL := strings.TrimRight(config.Cfg.Site.URL, "/") + "/about.html"
 	return ctx.writeHTML(tmpl, filepath.Join("public", "about.html"), ctx.pageData(map[string]interface{}{
 		"CanonicalURL": canonicalURL,
-		"Title":      fm.Title,
-		"Content":    template.HTML(rendered.html),
-		"HasMermaid": rendered.hasMermaid,
-		"Nav":        navAbout,
+		"Title":        fm.Title,
+		"Content":      template.HTML(rendered.html),
+		"HasMermaid":   rendered.hasMermaid,
+		"Nav":          navAbout,
 	}))
 }
 
@@ -561,16 +561,19 @@ func (ctx *buildContext) renderFriends() error {
 	canonicalURL := strings.TrimRight(config.Cfg.Site.URL, "/") + "/friends.html"
 	return ctx.writeHTML(tmpl, filepath.Join("public", "friends.html"), ctx.pageData(map[string]interface{}{
 		"CanonicalURL": canonicalURL,
-		"Title":      fm.Title,
-		"Content":    template.HTML(rendered.html),
-		"HasMermaid": rendered.hasMermaid,
-		"Nav":        navFriends,
+		"Title":        fm.Title,
+		"Content":      template.HTML(rendered.html),
+		"HasMermaid":   rendered.hasMermaid,
+		"Nav":          navFriends,
 	}))
 }
 
 func renderMarkdownPage(path, fallbackTitle string) (*Frontmatter, renderedMarkdown, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
+		if os.IsNotExist(err) {
+			return &Frontmatter{Title: fallbackTitle}, renderedMarkdown{}, nil
+		}
 		return nil, renderedMarkdown{}, err
 	}
 
@@ -792,10 +795,10 @@ func escapeXML(value string) string {
 var cssFiles = []string{
 	"static/css/layout.css",
 	"static/css/components/header.css",
-	"static/css/components/code.css",
 	"static/css/components/chroma.css",
 	"static/css/pages/index.css",
 	"static/css/pages/post.css",
+	"static/css/components/code.css",
 	"static/css/pages/articles.css",
 	"static/css/pages/friends.css",
 	"static/css/components/heatmap.css",

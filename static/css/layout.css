@@ -11,8 +11,8 @@
     --bg-tertiary: #3c3e42;
     --text-color: #e8eaed;
     --text-muted: #9aa0a6;
-    --primary-color: #cb1e59;
-    --primary-hover: #a61848;
+    --primary-color: #029e9e;
+    --primary-hover: #016666;
     --border-color: #3c4043;
     --border-light: #303134;
     --code-bg: #282a2d;
@@ -34,8 +34,8 @@
     --bg-tertiary: #dde1e6;
     --text-color: #1a1a2e;
     --text-muted: #4a4d5e;
-    --primary-color: #b81a51;
-    --primary-hover: #931541;
+    --primary-color: #017a7a;
+    --primary-hover: #015c5c;
     --border-color: #b0b8c1;
     --border-light: #d8dce3;
     --code-bg: #f0f2f5;
@@ -48,9 +48,6 @@
     --blockquote-bg: #f5f6f8;
     --rain-color: 40,55,90;
     --blockquote-color: #3a3d4a;
-}
-
-html {
 }
 
 #rain-canvas {
@@ -73,10 +70,6 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-}
-
-body.menu-open {
-    overflow: hidden;
 }
 
 main {

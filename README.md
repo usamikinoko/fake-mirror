@@ -1,10 +1,12 @@
-# Rash
+# Rainhush
 
 Rainhush is a fast, lightweight static site generator built with Go. It transforms Markdown content into a fully-rendered static site with syntax highlighting, Mermaid diagram support, and built-in deployment tooling.
 
 ### Language
 
 [English](./README.md) | [中文](./README_CN.md)
+
+Developer workflow: [DEVELOPMENT.md](./DEVELOPMENT.md)
 
 ## Quick Start
 
@@ -34,7 +36,8 @@ rainhush push    # Build and deploy
 | `rainhush build` | Build the site into `public/` |
 | `rainhush test` | Build, serve locally, and rebuild when files under `content/`, `templates/`, or `static/` change |
 | `rainhush push` | Build and deploy the generated site |
-| `rainhush clear` | Remove `public/` |
+| `rainhush clean` | Remove `public/` |
+| `rainhush clear` | Alias of `rainhush clean` |
 | `rainhush --version` | Print version |
 
 Notes:
@@ -64,7 +67,7 @@ home:
 deploy:
   mode: git
   remote: git@github.com:username/repo.git
-  branch: main
+  branch: gh-pages
 ```
 
 Field notes:
@@ -82,6 +85,7 @@ Field notes:
 
 - If `deploy.remote` is a Git URL, Rainhush configures an internal `deploy` remote automatically.
 - If `deploy.remote` is a remote name, that remote must already exist in `public/.git`.
+- The recommended deploy branch is `gh-pages`; `push` force-pushes the generated site branch.
 
 #### Server mode
 

@@ -1,4 +1,4 @@
-﻿package main
+package main
 
 import (
 	"context"
@@ -23,7 +23,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Commands that work without a config file
 	switch os.Args[1] {
 	case "--version", "-v":
 		fmt.Printf("rainhush version %s\n", version)
@@ -40,6 +39,13 @@ func main() {
 			fmt.Fprintf(os.Stderr, "Init failed: %v\n", err)
 			os.Exit(1)
 		}
+		return
+	case "clean", "clear":
+		if err := os.RemoveAll("public"); err != nil {
+			fmt.Fprintf(os.Stderr, "Clean failed: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Println("public/ directory removed.")
 		return
 	}
 
@@ -89,12 +95,6 @@ func main() {
 			os.Exit(1)
 		}
 		fmt.Println("Push completed.")
-	case "clear":
-		if err := os.RemoveAll("public"); err != nil {
-			fmt.Fprintf(os.Stderr, "Clear failed: %v\n", err)
-			os.Exit(1)
-		}
-		fmt.Println("public/ directory removed.")
 	default:
 		fmt.Printf("Unknown command: %s\n", os.Args[1])
 		printUsage()
@@ -111,10 +111,10 @@ func printUsage() {
 	fmt.Println("  rainhush build                 Build the site from markdown files")
 	fmt.Println("  rainhush test                  Build, serve locally, and rebuild on file changes")
 	fmt.Println("  rainhush push                  Build and push to remote repository")
-	fmt.Println("  rainhush clear                 Remove the public/ build directory")
+	fmt.Println("  rainhush clean                 Remove the public/ build directory")
+	fmt.Println("  rainhush clear                 Alias of clean")
 	fmt.Println()
 	fmt.Println("Flags:")
 	fmt.Println("  -v, --version  Print version")
 	fmt.Println("  -h, --help     Print help")
 }
-

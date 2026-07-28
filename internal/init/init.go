@@ -1,4 +1,4 @@
-﻿package init
+package init
 
 import (
 	"embed"
@@ -36,6 +36,11 @@ func Scaffold(targetDir string) error {
 		if d.IsDir() {
 			return os.MkdirAll(dest, 0755)
 		}
+		if _, err := os.Stat(dest); err == nil {
+			return fmt.Errorf("refusing to overwrite existing file %s", dest)
+		} else if !os.IsNotExist(err) {
+			return fmt.Errorf("stat %s: %w", dest, err)
+		}
 		data, err := scaffoldFS.ReadFile(path)
 		if err != nil {
 			return fmt.Errorf("read embedded %s: %w", path, err)
@@ -52,4 +57,3 @@ func Scaffold(targetDir string) error {
 	fmt.Printf("Initialized rainhush site in %s\n", targetDir)
 	return nil
 }
-

@@ -44,7 +44,7 @@ func (r *codeBlockRenderer) renderFencedCodeBlock(w util.BufWriter, source []byt
 		lines := n.Lines()
 		for i := 0; i < lines.Len(); i++ {
 			line := lines.At(i)
-			w.Write(line.Value(source))
+			w.WriteString(stdhtml.EscapeString(string(line.Value(source))))
 		}
 		w.WriteString(`</pre>`)
 		return ast.WalkSkipChildren, nil

@@ -9,6 +9,10 @@
   },
   "license": "MIT",
   "author": "Hypokinoko",
+  "scripts": {
+    "prepack": "node scripts/prepack.mjs",
+    "test": "go test ./..."
+  },
   "bin": {
     "rainhush": "rainhush.exe"
   },
@@ -20,8 +24,7 @@
     "rainhush"
   ],
   "files": [
-    "rainhush.exe",
-    "install.mjs"
+    "rainhush.exe"
   ],
   "os": ["win32"]
 }

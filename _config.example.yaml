@@ -16,7 +16,7 @@ deploy:
   mode: git
 
   remote: git@github.com:username/repo.git
-  branch: main
+  branch: gh-pages
 
   # server:
   #   host: example.com

@@ -1,10 +1,12 @@
-# Rainhush (Rainhush)
+# Rainhush
 
-Rash 是一个基于 Go 语言的轻量级静态站点生成工具 (Static Site Generator)。它将 Markdown 内容转换为完整渲染的静态站点，支持语法高亮、Mermaid 图表渲染，并内置部署工具。
+Rainhush 是一个基于 Go 语言的轻量级静态站点生成工具 (Static Site Generator)。它将 Markdown 内容转换为完整渲染的静态站点，支持语法高亮、Mermaid 图表渲染，并内置部署工具。
 
 ### 语言
 
 [English](./README.md) | [中文](./README_CN.md)
+
+开发流程手册见 [DEVELOPMENT.md](./DEVELOPMENT.md)
 
 ## 快速入门
 
@@ -34,7 +36,8 @@ rainhush push    # 构建并部署
 | `rainhush build` | 将站点构建到 `public/` |
 | `rainhush test` | 构建，启动本地服务器，并在 `content/`, `templates/`, `static/` 中的文件变化时自动重建 |
 | `rainhush push` | 构建并部署生成的站点 |
-| `rainhush clear` | 删除 `public/` 目录 |
+| `rainhush clean` | 删除 `public/` 目录 |
+| `rainhush clear` | `rainhush clean` 的兼容别名 |
 | `rainhush --version` | 打印版本号 |
 
 注意：
@@ -64,7 +67,7 @@ home:
 deploy:
   mode: git
   remote: git@github.com:username/repo.git
-  branch: main
+  branch: gh-pages
 ```
 
 字段说明：
@@ -82,6 +85,7 @@ deploy:
 
 - 如果 `deploy.remote` 是 Git URL，Rainhush 会自动配置一个 `deploy` 远程仓库。
 - 如果 `deploy.remote` 是远程仓库名称，则该名称必须已在 `public/.git` 中存在。
+- 推荐将部署分支设置为 `gh-pages`；`push` 会对生成站点分支执行强推送。
 
 #### Server 模式
 

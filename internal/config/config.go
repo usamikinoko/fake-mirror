@@ -1,7 +1,9 @@
 package config
 
 import (
+	"fmt"
 	"os"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -60,20 +62,39 @@ func Load() error {
 		return err
 	}
 
+	Cfg.Site.URL = strings.TrimSpace(Cfg.Site.URL)
+	Cfg.Site.Description = strings.TrimSpace(Cfg.Site.Description)
+	Cfg.Site.Favicon = strings.TrimSpace(Cfg.Site.Favicon)
+	Cfg.Home.Title = strings.TrimSpace(Cfg.Home.Title)
+	Cfg.Home.SubTitle = strings.TrimSpace(Cfg.Home.SubTitle)
+	Cfg.Home.Avatar = strings.TrimSpace(Cfg.Home.Avatar)
+	Cfg.Home.Owner = strings.TrimSpace(Cfg.Home.Owner)
+	Cfg.Deploy.Mode = strings.TrimSpace(Cfg.Deploy.Mode)
+	Cfg.Deploy.Remote = strings.TrimSpace(Cfg.Deploy.Remote)
+	Cfg.Deploy.Branch = strings.TrimSpace(Cfg.Deploy.Branch)
+	Cfg.Deploy.Server.Host = strings.TrimSpace(Cfg.Deploy.Server.Host)
+	Cfg.Deploy.Server.User = strings.TrimSpace(Cfg.Deploy.Server.User)
+	Cfg.Deploy.Server.Password = strings.TrimSpace(Cfg.Deploy.Server.Password)
+	Cfg.Deploy.Server.Path = strings.TrimSpace(Cfg.Deploy.Server.Path)
+	Cfg.Deploy.Server.Identity = strings.TrimSpace(Cfg.Deploy.Server.Identity)
+	Cfg.Deploy.Server.KnownHosts = strings.TrimSpace(Cfg.Deploy.Server.KnownHosts)
+
 	if Cfg.Server.Port == 0 {
 		Cfg.Server.Port = 8080
 	}
 	if Cfg.Deploy.Mode == "" {
 		Cfg.Deploy.Mode = "git"
+	} else if Cfg.Deploy.Mode != "git" && Cfg.Deploy.Mode != "server" {
+		return fmt.Errorf("unsupported deploy.mode %q", Cfg.Deploy.Mode)
 	}
 	if Cfg.Deploy.Branch == "" {
-		Cfg.Deploy.Branch = "main"
+		Cfg.Deploy.Branch = "gh-pages"
 	}
 	if Cfg.Deploy.Server.Port == 0 {
 		Cfg.Deploy.Server.Port = 22
 	}
 	if Cfg.Deploy.Server.Path == "" {
-	Cfg.Deploy.Server.Path = "/var/www/rainhush"
+		Cfg.Deploy.Server.Path = "/var/www/rainhush"
 	}
 
 	return nil

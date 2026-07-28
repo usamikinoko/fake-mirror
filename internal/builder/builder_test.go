@@ -47,3 +47,19 @@ func TestContainsMermaidFence(t *testing.T) {
 		}
 	})
 }
+
+func TestRenderMarkdownPageMissingFileFallsBackToEmptyPage(t *testing.T) {
+	fm, rendered, err := renderMarkdownPage(filepath.Join(t.TempDir(), "missing.md"), "About")
+	if err != nil {
+		t.Fatalf("renderMarkdownPage returned error: %v", err)
+	}
+	if fm.Title != "About" {
+		t.Fatalf("expected fallback title, got %q", fm.Title)
+	}
+	if rendered.html != "" {
+		t.Fatalf("expected empty rendered content, got %q", rendered.html)
+	}
+	if rendered.hasMermaid {
+		t.Fatal("did not expect mermaid flag for missing file")
+	}
+}

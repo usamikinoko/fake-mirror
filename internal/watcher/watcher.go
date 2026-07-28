@@ -30,6 +30,9 @@ func Watch(onChange func(string)) (func() error, error) {
 			}
 			return nil
 		}); err != nil {
+			if os.IsNotExist(err) {
+				continue
+			}
 			w.Close()
 			return nil, fmt.Errorf("watch %s: %w", dir, err)
 		}
