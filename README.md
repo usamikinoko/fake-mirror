@@ -1,12 +1,64 @@
 # Rainhush
 
-Rainhush is a fast, lightweight static site generator built with Go. It transforms Markdown content into a fully-rendered static site with syntax highlighting, Mermaid diagram support, and built-in deployment tooling.
+Rainhush is a fast, lightweight static site generator built with Go. It transforms Markdown content into a fully-rendered static site with syntax highlighting, Mermaid diagram support, structured image layouts, and built-in deployment tooling.
 
 ### Language
 
 [English](./README.md) | [中文](./README_CN.md)
 
 Developer workflow: [DEVELOPMENT.md](./DEVELOPMENT.md)
+
+## Features
+
+- **Syntax highlighting** — Chroma-powered code highlighting with copy buttons.
+- **Mermaid diagrams** — Render `mermaid` fenced code blocks at build time.
+- **Structured image layouts** — Display images as curated grids, masonry columns, carousels, or custom layouts with the built-in `image-layout` syntax (details below).
+
+### Image Layouts
+
+Rainhush embeds the `image-layout` syntax for turning fenced code blocks into structured image displays. It is compatible with [obsidian-image-layouts](https://github.com/git-no/obsidian-image-layouts), so Obsidian notes can be published as-is without syntax changes. Rendering happens at build time — output is plain static HTML, SEO-friendly and dependency-free.
+
+```markdown
+```image-layout-a
+![[beach-1.jpg|Low tide]]
+![[beach-2.jpg|Sunset]]
+```
+
+```image-layout-masonry-3
+![[photo-1.jpg]]
+![[photo-2.jpg]]
+![[photo-3.jpg]]
+![[photo-4.jpg]]
+![[photo-5.jpg]]
+![[photo-6.jpg]]
+```
+```
+
+Options can be set via block-level YAML front matter:
+
+```markdown
+```image-layout
+---
+layout: d
+caption: A day at the beach
+overlay: always
+descriptions:
+  - Low tide
+  - Running in the sand
+  - Sunset
+---
+![[beach-1.jpg]]
+![[beach-2.jpg]]
+![[beach-3.jpg]]
+```
+```
+
+Notes:
+
+- `![[name.jpg]]` resolves to `static/images/name.jpg`, served at `/images/...`; remote URLs (`https://...`) and Markdown image syntax `![alt](url)` are also supported.
+- Available layouts: preset grids `a`–`i` and `single`, masonry `masonry-2`…`masonry-6`, carousel `carousel`, custom ASCII grids (`grid:` option), plus `image-layout-left/center/right` alignment shortcuts.
+- Performance: image dimensions are detected at build time and emitted as `width`/`height` (no layout shift); the first image loads eagerly with high priority while the rest lazy-load on scroll; grid cells use a fixed row height.
+- Full syntax specification: [MIGRATION-GUIDE.md](./docs/MIGRATION-GUIDE.md)
 
 ## Quick Start
 

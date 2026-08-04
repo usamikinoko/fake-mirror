@@ -1,12 +1,64 @@
 # Rainhush
 
-Rainhush 是一个基于 Go 语言的轻量级静态站点生成工具 (Static Site Generator)。它将 Markdown 内容转换为完整渲染的静态站点，支持语法高亮、Mermaid 图表渲染，并内置部署工具。
+Rainhush 是一个基于 Go 语言的轻量级静态站点生成工具 (Static Site Generator)。它将 Markdown 内容转换为完整渲染的静态站点，支持语法高亮、Mermaid 图表渲染、结构化图片布局，并内置部署工具。
 
 ### 语言
 
 [English](./README.md) | [中文](./README_CN.md)
 
 开发流程手册见 [DEVELOPMENT.md](./DEVELOPMENT.md)
+
+## 特色功能
+
+- **语法高亮** — 基于 Chroma 的代码高亮与一键复制按钮。
+- **Mermaid 图表** — 构建期渲染 `mermaid` 围栏代码块。
+- **图片结构化展示** — 使用内置 `image-layout` 语法，把图片组织成网格、瀑布流、轮播或自定义布局（详见下文）。
+
+### Image Layouts（图片结构化展示）
+
+Rainhush 内置 `image-layout` 语法，用于把多张图片组织成美观的布局。语法与 [obsidian-image-layouts](https://github.com/git-no/obsidian-image-layouts) 兼容，Obsidian 笔记无需改动语法即可直接发布。渲染发生在构建期，产出纯静态 HTML，对 SEO 友好且无运行时依赖。
+
+```markdown
+```image-layout-a
+![[beach-1.jpg|Low tide]]
+![[beach-2.jpg|Sunset]]
+```
+
+```image-layout-masonry-3
+![[photo-1.jpg]]
+![[photo-2.jpg]]
+![[photo-3.jpg]]
+![[photo-4.jpg]]
+![[photo-5.jpg]]
+![[photo-6.jpg]]
+```
+```
+
+布局选项可通过块级 YAML front matter 配置：
+
+```markdown
+```image-layout
+---
+layout: d
+caption: A day at the beach
+overlay: always
+descriptions:
+  - Low tide
+  - Running in the sand
+  - Sunset
+---
+![[beach-1.jpg]]
+![[beach-2.jpg]]
+![[beach-3.jpg]]
+```
+```
+
+说明：
+
+- `![[name.jpg]]` 形式的引用对应 `static/images/name.jpg`（站点上以 `/images/...` 访问）；也支持远程图片 `https://...` 与 Markdown 图片语法 `![alt](url)`。
+- 可用布局：预置网格 `a`–`i` 与 `single`、瀑布流 `masonry-2`~`masonry-6`、轮播 `carousel`、自定义 ASCII 网格（`grid:` 选项），以及 `image-layout-left/center/right` 对齐简写。
+- 性能：构建期自动探测本地图片尺寸并输出 `width`/`height` 属性（无布局抖动）；布局首图即时加载并优先调度，其余图片滚动到视口才懒加载；网格单元格使用固定行高。
+- 完整语法规范见 [MIGRATION-GUIDE.md](./docs/MIGRATION-GUIDE.md)
 
 ## 快速入门
 

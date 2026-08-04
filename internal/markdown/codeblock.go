@@ -5,6 +5,11 @@ import (
 	stdhtml "html"
 	"strings"
 
+	"rainhush/internal/markdown/components"
+	"rainhush/internal/plugins"
+
+	_ "rainhush/internal/markdown/components/imagelayout"
+
 	"github.com/alecthomas/chroma/v2"
 	chromahtml "github.com/alecthomas/chroma/v2/formatters/html"
 	"github.com/alecthomas/chroma/v2/lexers"
@@ -62,6 +67,16 @@ func (r *codeBlockRenderer) renderFencedCodeBlock(w util.BufWriter, source []byt
 	}
 
 	rawCodeStr := strings.TrimLeft(string(rawCode), "\n\r\t ")
+
+	doc := Document()
+	if out, ok := components.RenderFence(lang, rawCodeStr, doc); ok {
+		w.WriteString(out)
+		return ast.WalkSkipChildren, nil
+	}
+	if out, ok := plugins.RenderFence(lang, rawCodeStr, plugins.Context{Document: doc}); ok {
+		w.WriteString(out)
+		return ast.WalkSkipChildren, nil
+	}
 
 	w.WriteString(`<div class="code-block">`)
 	w.WriteString(`<div class="code-block-header">`)

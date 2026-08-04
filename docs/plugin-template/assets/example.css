@@ -1,0 +1,9 @@
+.my-box {
+  border: 2px solid currentColor;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+.my-box-red { border-color: #ef4444; background: #fef2f2; }
+.my-box-green { border-color: #22c55e; background: #f0fdf4; }
+.my-box-blue { border-color: #3b82f6; background: #eff6ff; }

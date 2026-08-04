@@ -18,6 +18,8 @@ import (
 
 	"rainhush/internal/config"
 	"rainhush/internal/markdown"
+	"rainhush/internal/markdown/components"
+	"rainhush/internal/plugins"
 
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
@@ -122,6 +124,12 @@ var (
 )
 
 func Build() error {
+	if names := components.String(); names != "" {
+		fmt.Printf("Components: %s\n", names)
+	}
+	if names := plugins.String(); names != "" {
+		fmt.Printf("Plugins: %s\n", names)
+	}
 	if err := prepareOutputDir("public"); err != nil {
 		return fmt.Errorf("prepare public directory: %w", err)
 	}
@@ -291,6 +299,9 @@ func parsePost(path string) (*Post, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	markdown.SetDocument(path)
+	defer markdown.SetDocument("")
 
 	content := strings.ReplaceAll(string(data), "\r\n", "\n")
 	fm, body, err := parseFrontmatter(content)
@@ -577,6 +588,9 @@ func renderMarkdownPage(path, fallbackTitle string) (*Frontmatter, renderedMarkd
 		return nil, renderedMarkdown{}, err
 	}
 
+	markdown.SetDocument(path)
+	defer markdown.SetDocument("")
+
 	content := strings.ReplaceAll(string(data), "\r\n", "\n")
 	fm, body, err := parseFrontmatter(content)
 	if err != nil {
@@ -822,6 +836,14 @@ func (ctx *buildContext) bundleAssets() error {
 		buf.Write(data)
 		buf.WriteByte('\n')
 	}
+	for _, c := range components.CSS() {
+		buf.Write(c)
+		buf.WriteByte('\n')
+	}
+	for _, c := range plugins.CSS() {
+		buf.Write(c)
+		buf.WriteByte('\n')
+	}
 
 	minifiedCSS := minifyCSS(buf.Bytes())
 	cssHash := contentHash(minifiedCSS)
@@ -837,6 +859,14 @@ func (ctx *buildContext) bundleAssets() error {
 			return fmt.Errorf("read %s: %w", p, err)
 		}
 		buf.Write(data)
+		buf.Write([]byte{';', '\n'})
+	}
+	for _, j := range components.JS() {
+		buf.Write(j)
+		buf.Write([]byte{';', '\n'})
+	}
+	for _, j := range plugins.JS() {
+		buf.Write(j)
 		buf.Write([]byte{';', '\n'})
 	}
 
