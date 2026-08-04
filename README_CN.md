@@ -165,7 +165,8 @@ deploy:
 content/
 ├── posts/
 ├── about/
-│   └── about.md
+│   ├── about_CN.md   # 简体中文，默认 /about.html
+│   └── about_EN.md   # English，/about_EN.html
 └── friends/
     └── friends.md
 ```
@@ -214,9 +215,10 @@ More content here.
 
 #### About 和 Friends
 
-`content/about/about.md` 和 `content/friends/friends.md` 会作为普通 Markdown 页面渲染，支持可选的 `title` 前置元数据。
+`content/about/about_CN.md` 与 `content/about/about_EN.md` 分别渲染为 `/about.html`（简体中文，默认路由）与 `/about_EN.html`（English）；`content/friends/friends.md` 渲染为 `/friends.html`。它们都作为普通 Markdown 页面渲染，支持可选的 `title` 前置元数据。
 
 当前行为：
 
+- About 两个语言版本的开头都带有 `English | 中文简体` 语言切换链接，分别指向 `/about_EN.html` 与 `/about.html`。
 - Friends 链接没有特殊的卡片模式。
 - 如果未填写 `title`，页面会默认显示为 `About` 或 `Friends`。

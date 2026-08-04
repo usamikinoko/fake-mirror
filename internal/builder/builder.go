@@ -532,11 +532,6 @@ func (ctx *buildContext) renderArticles(tmpl *template.Template, posts []*Post) 
 }
 
 func (ctx *buildContext) renderAbout() error {
-	fm, rendered, err := renderMarkdownPage("content/about/about.md", "About")
-	if err != nil {
-		return err
-	}
-
 	tmpl, err := ctx.cloneTmpl()
 	if err != nil {
 		return err
@@ -545,8 +540,24 @@ func (ctx *buildContext) renderAbout() error {
 		return err
 	}
 
-	canonicalURL := strings.TrimRight(config.Cfg.Site.URL, "/") + "/about.html"
-	return ctx.writeHTML(tmpl, filepath.Join("public", "about.html"), ctx.pageData(map[string]interface{}{
+	for _, p := range []struct{ out, src string }{
+		{"about.html", "content/about/about_CN.md"},
+		{"about_EN.html", "content/about/about_EN.md"},
+	} {
+		if err := ctx.renderAboutPage(tmpl, p.out, p.src); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (ctx *buildContext) renderAboutPage(tmpl *template.Template, out, src string) error {
+	fm, rendered, err := renderMarkdownPage(src, "About")
+	if err != nil {
+		return err
+	}
+	canonicalURL := strings.TrimRight(config.Cfg.Site.URL, "/") + "/" + out
+	return ctx.writeHTML(tmpl, filepath.Join("public", out), ctx.pageData(map[string]interface{}{
 		"CanonicalURL": canonicalURL,
 		"Title":        fm.Title,
 		"Content":      template.HTML(rendered.html),
@@ -691,6 +702,7 @@ func renderSitemap(posts []*Post) error {
 	add("/articles.html", "", "0.9")
 	add("/friends.html", "", "0.6")
 	add("/about.html", "", "0.6")
+	add("/about_EN.html", "", "0.6")
 
 	totalPages := max(int(math.Ceil(float64(len(posts))/float64(articlesPerPage))), 1)
 	for page := 2; page <= totalPages; page++ {

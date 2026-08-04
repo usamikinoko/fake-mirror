@@ -165,7 +165,8 @@ deploy:
 content/
 ├── posts/
 ├── about/
-│   └── about.md
+│   ├── about_CN.md   # Simplified Chinese, default /about.html
+│   └── about_EN.md   # English, /about_EN.html
 └── friends/
     └── friends.md
 ```
@@ -214,9 +215,10 @@ Implementation details:
 
 ### About and Friends
 
-`content/about/about.md` and `content/friends/friends.md` are rendered as plain Markdown pages with optional `title` frontmatter.
+`content/about/about_CN.md` and `content/about/about_EN.md` render as `/about.html` (Simplified Chinese, the default route) and `/about_EN.html` (English); `content/friends/friends.md` renders as `/friends.html`. All are plain Markdown pages with optional `title` frontmatter.
 
 Current behavior:
 
+- Both About language versions start with an `English | 中文简体` language switcher, linking to `/about_EN.html` and `/about.html`.
 - There is no special card schema for friends links.
 - If `title` is omitted, the page falls back to `About` or `Friends`.
