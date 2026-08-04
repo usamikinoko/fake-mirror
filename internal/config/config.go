@@ -35,6 +35,12 @@ type DeployServerConfig struct {
 	KnownHosts string `yaml:"known_hosts"`
 }
 
+type DeepConfig struct {
+	Enabled  bool   `yaml:"enabled"`
+	Password string `yaml:"password"`
+	Sign     string `yaml:"sign"`
+}
+
 type DeployConfig struct {
 	Mode   string             `yaml:"mode"`
 	Remote string             `yaml:"remote"`
@@ -46,6 +52,7 @@ type Config struct {
 	Server ServerConfig `yaml:"server"`
 	Site   SiteConfig   `yaml:"site"`
 	Home   HomeConfig   `yaml:"home"`
+	Deep   DeepConfig   `yaml:"deep"`
 	Deploy DeployConfig `yaml:"deploy"`
 }
 
@@ -69,6 +76,8 @@ func Load() error {
 	Cfg.Home.SubTitle = strings.TrimSpace(Cfg.Home.SubTitle)
 	Cfg.Home.Avatar = strings.TrimSpace(Cfg.Home.Avatar)
 	Cfg.Home.Owner = strings.TrimSpace(Cfg.Home.Owner)
+	Cfg.Deep.Password = strings.TrimSpace(Cfg.Deep.Password)
+	Cfg.Deep.Sign = strings.TrimSpace(Cfg.Deep.Sign)
 	Cfg.Deploy.Mode = strings.TrimSpace(Cfg.Deploy.Mode)
 	Cfg.Deploy.Remote = strings.TrimSpace(Cfg.Deploy.Remote)
 	Cfg.Deploy.Branch = strings.TrimSpace(Cfg.Deploy.Branch)

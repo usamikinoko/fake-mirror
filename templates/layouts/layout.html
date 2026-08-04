@@ -4,6 +4,7 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        {{if .NoIndex}}<meta name="robots" content="noindex, nofollow" />{{end}}
         <title>{{if and .Title (ne .Title .SiteName)}}{{.Title}} - {{.SiteName}}{{else}}{{.SiteName}} - Hypokinoko（阿菇）的个人博客{{end}}</title>
         {{if .Site.Description}}<meta name="description" content="{{.Site.Description}}" />{{end}}
         <meta name="keywords" content="Rainhush,雨静,Hypokinoko,阿菇,超级阿菇,个人博客,技术博客,Go,静态站点生成,Agent开发,编程" />
@@ -65,6 +66,7 @@
             defer
         ></script>
         {{end}}
+        {{if .DeepJS}}<script src="{{.DeepJS}}"></script>{{end}}
         <script src="{{.BundleJS}}" defer></script>
     </head>
     <body class="site-body">

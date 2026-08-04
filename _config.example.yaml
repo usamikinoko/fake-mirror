@@ -12,6 +12,11 @@ home:
   avatar: https://img.kinoko.fun/fake-mirror/image-20260505193500896.png?imageSlim
   owner: Hypokinoko
 
+deep:
+  enabled: true
+  password: change-me
+  sign: change-me-to-a-long-random-string
+
 deploy:
   mode: git
 

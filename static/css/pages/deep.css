@@ -1,0 +1,119 @@
+.auth-hero {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 56px 0 40px;
+    text-align: center;
+}
+
+.auth-title {
+    font-size: 1.5em;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 6px;
+}
+
+.auth-desc {
+    font-size: 0.9em;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.auth-input {
+    width: 280px;
+    max-width: 100%;
+    padding: 10px 2px;
+    font-size: 1.05em;
+    letter-spacing: 0.35em;
+    text-align: center;
+    color: var(--text-color);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--border-color);
+    border-radius: 0;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.auth-input:focus {
+    border-bottom-color: var(--primary-color);
+}
+
+.auth-submit {
+    padding: 8px 24px;
+    font-size: 0.85em;
+    cursor: pointer;
+    color: #fff;
+    background: var(--primary-color);
+    border: none;
+    border-radius: 4px;
+    transition: background 0.15s;
+}
+
+.auth-submit:hover {
+    background: var(--primary-hover);
+}
+
+.auth-error {
+    margin-top: 18px;
+    color: #d64545;
+    font-size: 0.85em;
+}
+
+.auth-divider {
+    width: 60px;
+    height: 2px;
+    background: var(--primary-color);
+    margin: 36px auto 0;
+    border-radius: 1px;
+}
+
+.deep-home {
+    margin-bottom: 8px;
+}
+
+.deep-home h2:first-child {
+    margin-top: 0;
+}
+
+.deep-post-container {
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 24px 20px 40px;
+}
+
+@media (max-width: 768px) {
+    .deep-post-container {
+        padding: 20px 16px 36px;
+    }
+}
+
+.deep-post-title {
+    margin: 4px 0 12px;
+}
+
+.deep-post .post-body {
+    margin-top: 4px;
+}
+
+.deep-section {
+    margin-top: 40px;
+    padding-top: 28px;
+    border-top: 1px solid var(--border-light);
+}
+
+.deep-list .post-list-item {
+    padding: 8px 0;
+}
+
+.deep-empty {
+    color: var(--text-muted);
+    font-size: 0.92em;
+}

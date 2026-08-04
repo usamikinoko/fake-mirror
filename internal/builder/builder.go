@@ -76,6 +76,7 @@ type buildContext struct {
 	commonTmpl *template.Template
 	bundleCSS  string
 	bundleJS   string
+	deepJS     string
 }
 
 var md = goldmark.New(
@@ -164,6 +165,9 @@ func Build() error {
 		return err
 	}
 	if err := ctx.renderFriends(); err != nil {
+		return err
+	}
+	if err := ctx.renderDeep(); err != nil {
 		return err
 	}
 	if err := renderSitemap(posts); err != nil {
@@ -828,6 +832,7 @@ var cssFiles = []string{
 	"static/css/pages/articles.css",
 	"static/css/pages/friends.css",
 	"static/css/components/heatmap.css",
+	"static/css/pages/deep.css",
 }
 
 var jsFiles = []string{

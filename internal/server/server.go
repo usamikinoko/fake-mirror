@@ -63,7 +63,9 @@ func cacheControlForPath(requestPath string) string {
 	switch {
 	case strings.HasPrefix(cleanPath, "/static/bundle.") && (ext == ".css" || ext == ".js"):
 		return "public, max-age=31536000, immutable"
-	case cleanPath == "/" || strings.HasSuffix(requestPath, "/") || ext == ".html" || ext == ".xml" || ext == ".txt":
+	case strings.HasPrefix(cleanPath, "/static/deep.") && ext == ".js":
+		return "public, max-age=31536000, immutable"
+	case cleanPath == "/" || strings.HasSuffix(requestPath, "/") || ext == ".html" || ext == ".xml" || ext == ".txt" || ext == ".json":
 		return "public, max-age=0, must-revalidate"
 	default:
 		return "public, max-age=2592000"
