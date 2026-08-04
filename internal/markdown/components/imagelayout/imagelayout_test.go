@@ -246,14 +246,20 @@ func TestPadToSlots(t *testing.T) {
 func TestAssets(t *testing.T) {
 	css := c.CSS()
 	js := c.JS()
-	if len(css) != 1 || len(js) != 1 {
-		t.Fatalf("assets: css=%d js=%d", len(css), len(js))
+	if len(css) != 1 || len(js) != 2 {
+		t.Fatalf("assets: css=%d js=%d (want css=1 js=2)", len(css), len(js))
 	}
 	if !strings.Contains(string(css[0]), ".image-layouts-layout-a") {
 		t.Error("css missing grid styles")
 	}
 	if !strings.Contains(string(js[0]), "image-layout-carousel") {
-		t.Error("js missing carousel logic")
+		t.Error("js[0] missing carousel logic")
+	}
+	if !strings.Contains(string(js[1]), "IntersectionObserver") {
+		t.Error("js[1] missing lazy loader logic")
+	}
+	if !strings.Contains(string(css[0]), "content-visibility") {
+		t.Error("css missing content-visibility decoupling")
 	}
 }
 
@@ -362,5 +368,44 @@ func TestImgAttrs(t *testing.T) {
 	remote := imgAttrs(image{link: "https://x/y.jpg", external: true}, 2)
 	if strings.Contains(remote, "width=") {
 		t.Errorf("remote img should not have dimensions: %s", remote)
+	}
+	// 远程图即使作为首张也必须懒加载（不 eager），加载时机由 loader.js 控制
+	remoteFirst := imgAttrs(image{link: "https://x/y.jpg", external: true}, 0)
+	if strings.Contains(remoteFirst, "fetchpriority") || strings.Contains(remoteFirst, `loading="eager"`) {
+		t.Errorf("remote first img must be lazy, got: %s", remoteFirst)
+	}
+	if !strings.Contains(remoteFirst, `loading="lazy"`) {
+		t.Errorf("remote first img must have loading=lazy, got: %s", remoteFirst)
+	}
+}
+
+func TestSrcAttr(t *testing.T) {
+	if got := srcAttr(image{link: "a.jpg"}); got != "src" {
+		t.Errorf("srcAttr(local) = %q, want src", got)
+	}
+	if got := srcAttr(image{link: "https://x/y.jpg", external: true}); got != "data-src" {
+		t.Errorf("srcAttr(external) = %q, want data-src", got)
+	}
+}
+
+func TestRenderExternalDataSrc(t *testing.T) {
+	// 远程图渲染为 data-src（不产生 src），由 loader.js 按需加载
+	out, ok := c.Render("image-layout-a",
+		"![](https://example.com/x.jpg)\n![](https://example.com/y.jpg)\n", "test.md")
+	if !ok {
+		t.Fatal("external render not handled")
+	}
+	for _, want := range []string{`data-src="https://example.com/x.jpg"`, `data-src="https://example.com/y.jpg"`} {
+		if !strings.Contains(out, want) {
+			t.Errorf("external img missing %q in:\n%s", want, out)
+		}
+	}
+	if strings.Contains(out, ` src="https://example.com`) {
+		t.Errorf("external img should not emit src, got:\n%s", out)
+	}
+	// 本地图仍用 src
+	out2, _ := c.Render("image-layout-a", "![[a.jpg]]\n![[b.jpg]]\n", "test.md")
+	if !strings.Contains(out2, `src="/images/a.jpg"`) || strings.Contains(out2, `data-src="/images/`) {
+		t.Errorf("local img should keep src, got:\n%s", out2)
 	}
 }

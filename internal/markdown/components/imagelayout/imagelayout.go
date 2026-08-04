@@ -27,7 +27,10 @@ import (
 var cssAsset []byte
 
 //go:embed assets/image-layouts-carousel.js
-var jsAsset []byte
+var carouselJSAsset []byte
+
+//go:embed assets/image-layouts-loader.js
+var loaderJSAsset []byte
 
 type component struct{}
 
@@ -38,7 +41,9 @@ func init() { components.Register(&component{}) }
 func (c *component) Name() string { return "image-layout" }
 
 func (c *component) CSS() [][]byte { return [][]byte{cssAsset} }
-func (c *component) JS() [][]byte  { return [][]byte{jsAsset} }
+func (c *component) JS() [][]byte {
+	return [][]byte{carouselJSAsset, loaderJSAsset}
+}
 
 const (
 	layoutPrefix   = "image-layout"
@@ -545,7 +550,7 @@ func renderCell(img image, i int, o options, cellClass, gridArea string) string 
 	if gridArea != "" {
 		b.WriteString(` style="grid-area: ` + html.EscapeString(gridArea) + `"`)
 	}
-	b.WriteString(`><img src="` + html.EscapeString(img.link) + `" alt="` + html.EscapeString(altText(d, i)) + `" ` + imgAttrs(img, i) + `>`)
+	b.WriteString(`><img ` + srcAttr(img) + `="` + html.EscapeString(img.link) + `" alt="` + html.EscapeString(altText(d, i)) + `" ` + imgAttrs(img, i) + `>`)
 	if d != "" && o.overlay != "never" {
 		b.WriteString(`<div class="image-layouts-overlay`)
 		if o.overlay != "always" {
@@ -564,11 +569,13 @@ func desc(i int, img image, o options) string {
 	return img.alt
 }
 
-// imgAttrs 构建 <img> 加载属性：首图 eager + 高优先级立即加载，其余懒加载；
-// 已知尺寸的本地图输出 width/height，浏览器加载前即按比例占位，避免布局抖动。
+// imgAttrs 构建 <img> 加载属性：本地图首张 eager + 高优先级立即加载，其余懒加载；
+// 远程图一律懒加载（实际加载时机由 image-layouts-loader.js 通过 data-src 控制，
+// 此处 loading/decoding 仅作降级兜底）。已知尺寸的本地图输出 width/height，
+// 浏览器加载前即按比例占位，避免布局抖动。
 func imgAttrs(img image, index int) string {
 	attrs := `decoding="async"`
-	if index == 0 {
+	if !img.external && index == 0 {
 		attrs += ` fetchpriority="high" loading="eager"`
 	} else {
 		attrs += ` loading="lazy"`
@@ -577,6 +584,16 @@ func imgAttrs(img image, index int) string {
 		attrs += fmt.Sprintf(` width="%d" height="%d"`, img.width, img.height)
 	}
 	return attrs
+}
+
+// srcAttr 返回图片地址属性名：远程图用 data-src（由 loader.js 在进入视口时
+// 才赋值给 src，避免 innerHTML 注入瞬间浏览器并发拉取/解码，与页面其它功能解耦）；
+// 本地图直接用 src（同源快、有固有尺寸、无 JS 也能显示）。
+func srcAttr(img image) string {
+	if img.external {
+		return "data-src"
+	}
+	return "src"
 }
 
 func altText(d string, i int) string {
