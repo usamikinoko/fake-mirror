@@ -75,7 +75,7 @@
 }
 
 .deep-home {
-    margin-bottom: 8px;
+    margin-bottom: 0;
 }
 
 .deep-home h2:first-child {
@@ -104,13 +104,17 @@
 }
 
 .deep-section {
-    margin-top: 40px;
-    padding-top: 28px;
+    margin-top: 24px;
+    padding-top: 16px;
     border-top: 1px solid var(--border-light);
 }
 
+.deep-section .articles-header {
+    margin-bottom: 12px;
+}
+
 .deep-list .post-list-item {
-    padding: 8px 0;
+    padding: 4px 0;
 }
 
 .deep-empty {
