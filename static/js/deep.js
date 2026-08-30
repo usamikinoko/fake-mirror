@@ -97,7 +97,12 @@
     el.hidden = false;
     el.textContent = "内容加载失败";
   };
+  var loading = function (el) {
+    el.hidden = false;
+    el.textContent = "加载中…";
+  };
   var list = function (el, tok) {
+    loading(el);
     get("/deep/data/index.json", tok).then(function (t) {
       var items = JSON.parse(t).items || [];
       el.innerHTML = "";
@@ -132,6 +137,7 @@
       if (m) {
         var post = document.getElementById("deep-post");
         if (!post) return;
+        loading(post);
         get("/deep/data/posts/" + encodeURIComponent(m[1]) + ".html", tok).then(function (h) {
           post.innerHTML = h;
           post.hidden = false;
@@ -142,6 +148,7 @@
       }
       var home = document.getElementById("deep-home");
       if (home) {
+        loading(home);
         get("/deep/data/home.html", tok).then(function (h) {
           home.innerHTML = h;
           home.hidden = false;

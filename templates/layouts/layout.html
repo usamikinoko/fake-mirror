@@ -1,9 +1,10 @@
 {{define "layout"}}
 <!doctype html>
-<html lang="zh-CN">
+<html lang="{{if .Lang}}{{.Lang}}{{else}}zh-CN{{end}}">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="color-scheme" content="dark light" />
         {{if .NoIndex}}<meta name="robots" content="noindex, nofollow" />{{end}}
         <title>{{if and .Title (ne .Title .SiteName)}}{{.Title}} - {{.SiteName}}{{else}}{{.SiteName}} - Hypokinoko（阿菇）的个人博客{{end}}</title>
         {{if .Site.Description}}<meta name="description" content="{{.Site.Description}}" />{{end}}
@@ -49,24 +50,35 @@
         </script>
         <link rel="stylesheet" href="{{.BundleCSS}}" />
         <script>
+            function syncThemeButton(theme) {
+                var button = document.querySelector(".theme-toggle");
+                if (!button) return;
+                button.setAttribute("aria-pressed", theme === "light" ? "true" : "false");
+                button.setAttribute("aria-label", theme === "dark" ? "Use light theme" : "Use dark theme");
+            }
             (function () {
-                var s = localStorage.getItem("theme") || "dark";
-                document.documentElement.setAttribute("data-theme", s);
+                var theme = localStorage.getItem("theme") === "light" ? "light" : "dark";
+                document.documentElement.setAttribute("data-theme", theme);
+                document.addEventListener("DOMContentLoaded", function () { syncThemeButton(theme); });
             })();
             function toggleTheme() {
                 var c = document.documentElement.getAttribute("data-theme");
                 var n = c === "dark" ? "light" : "dark";
                 document.documentElement.setAttribute("data-theme", n);
                 localStorage.setItem("theme", n);
+                syncThemeButton(n);
+                window.dispatchEvent(new Event("themechange"));
             }
         </script>
         {{if .HasMermaid}}
         <script
             src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"
             defer
+            crossorigin="anonymous"
+            onerror="this.remove()"
         ></script>
         {{end}}
-        {{if .DeepJS}}<script src="{{.DeepJS}}"></script>{{end}}
+        {{if .DeepJS}}<script src="{{.DeepJS}}" defer></script>{{end}}
         <script src="{{.BundleJS}}" defer></script>
     </head>
     <body class="site-body">

@@ -3,6 +3,7 @@ package builder
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -46,6 +47,16 @@ func TestContainsMermaidFence(t *testing.T) {
 			t.Fatal("did not expect plain text to trigger mermaid loading")
 		}
 	})
+}
+
+func TestRenderMarkdownPreservesTrustedHTML(t *testing.T) {
+	rendered, err := renderMarkdown("<table><tr><td>ok</td></tr></table>")
+	if err != nil {
+		t.Fatalf("render markdown: %v", err)
+	}
+	if !strings.Contains(rendered.html, "<table>") || !strings.Contains(rendered.html, "<td>ok</td>") {
+		t.Fatalf("expected raw HTML in output, got %q", rendered.html)
+	}
 }
 
 func TestRenderMarkdownPageMissingFileFallsBackToEmptyPage(t *testing.T) {

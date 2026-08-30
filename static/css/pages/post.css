@@ -1,4 +1,4 @@
-.post h2 {
+.post > h1 {
     margin-bottom: 12px;
 }
 
@@ -67,6 +67,7 @@
 .post-body {
     line-height: 1.8;
     overflow-wrap: anywhere;
+    overflow-x: auto;
 }
 
 .post-body h2,
@@ -92,6 +93,7 @@
 .post-body img {
     max-width: 100%;
     height: auto;
+    vertical-align: middle;
     border-radius: var(--radius-base);
     margin: 8px 0;
 }
@@ -141,11 +143,10 @@
 
 .post-body table {
     width: 100%;
+    min-width: 560px;
     border-collapse: collapse;
     margin-bottom: 18px;
     font-size: 0.94em;
-    display: block;
-    overflow-x: auto;
 }
 
 .post-body thead {

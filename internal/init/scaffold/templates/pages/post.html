@@ -2,12 +2,12 @@
 <div class="container post-container">
 <div class="post-main">
 <article class="post">
-    <h2>{{.Title}}</h2>
+    <h1>{{.Title}}</h1>
     <div class="post-meta-top">
         {{if .Avatar}}<img class="post-author-avatar" src="{{.Avatar}}" alt="{{.Author}}" loading="lazy">{{end}}
         <div class="post-meta-row">
             {{if .Author}}<span class="post-author">{{.Author}}</span>{{end}}
-            {{if .Date}}{{if .Author}}<span class="post-meta-sep">·</span>{{end}}<span class="post-date">Published on {{.Date}}</span>{{end}}
+            {{if .Date}}{{if .Author}}<span class="post-meta-sep">·</span>{{end}}<time class="post-date" datetime="{{.Date}}">Published on {{.Date}}</time>{{end}}
             {{if .UpdatedAt}}{{if or .Author .Date}}<span class="post-meta-sep">·</span>{{end}}<span class="post-updated">Updated at {{.UpdatedAt}}</span>{{end}}
             {{if .Location}}{{if or .Author .Date .UpdatedAt}}<span class="post-meta-sep">·</span>{{end}}<span class="post-location">{{.Location}}</span>{{end}}
         </div>

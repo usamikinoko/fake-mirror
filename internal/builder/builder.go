@@ -23,6 +23,7 @@ import (
 
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
+	goldmarkhtml "github.com/yuin/goldmark/renderer/html"
 	"gopkg.in/yaml.v3"
 )
 
@@ -76,14 +77,16 @@ type buildContext struct {
 	commonTmpl *template.Template
 	bundleCSS  string
 	bundleJS   string
-	deepJS     string
 }
 
+// Markdown 内容由站点作者维护，允许其使用表格、徽章等原始 HTML。
+// 不应用于不受信任的用户输入。
 var md = goldmark.New(
 	goldmark.WithExtensions(
 		extension.Table,
-		markdown.CodeBlockExt,
+		markdown.Ext,
 	),
+	goldmark.WithRendererOptions(goldmarkhtml.WithUnsafe()),
 )
 
 func newBuildContext() (*buildContext, error) {
@@ -365,12 +368,15 @@ func splitFrontmatter(content string) (string, string) {
 		return "", content
 	}
 
-	parts := strings.SplitN(content[4:], "\n---\n", 2)
-	if len(parts) != 2 {
-		return "", content
+	rest := content[4:]
+	if idx := strings.Index(rest, "\n---\n"); idx >= 0 {
+		return rest[:idx], rest[idx+5:]
 	}
-
-	return parts[0], parts[1]
+	// 结尾 `---` 后无换行的 EOF 情况也视为合法 front matter 闭合
+	if strings.HasSuffix(rest, "\n---") {
+		return rest[:len(rest)-4], ""
+	}
+	return "", content
 }
 
 func parseFrontmatter(content string) (*Frontmatter, string, error) {
@@ -427,7 +433,7 @@ func (ctx *buildContext) renderPost(tmpl *template.Template, post *Post) error {
 func (ctx *buildContext) renderIndex(tmpl *template.Template, posts []*Post) error {
 	perCategory := 3
 
-	var techPosts, lifePosts []*Post
+	var techPosts, lifePosts, liteTechPosts, othersPosts []*Post
 	for _, p := range posts {
 		switch p.Category {
 		case "technology":
@@ -438,14 +444,17 @@ func (ctx *buildContext) renderIndex(tmpl *template.Template, posts []*Post) err
 			if len(lifePosts) < perCategory {
 				lifePosts = append(lifePosts, p)
 			}
+		case "lite-tech":
+			if len(liteTechPosts) < perCategory {
+				liteTechPosts = append(liteTechPosts, p)
+			}
 		default:
-			if len(techPosts) < perCategory {
-				techPosts = append(techPosts, p)
+			if len(othersPosts) < perCategory {
+				othersPosts = append(othersPosts, p)
 			}
 		}
 	}
 
-	hasBoth := len(techPosts) > 0 && len(lifePosts) > 0
 	cells, dl, ml, ht := computeHeatmap(posts)
 
 	return ctx.writeHTML(tmpl, filepath.Join("public", "index.html"), ctx.pageData(map[string]interface{}{
@@ -458,7 +467,8 @@ func (ctx *buildContext) renderIndex(tmpl *template.Template, posts []*Post) err
 		},
 		"TechPosts":        techPosts,
 		"LifePosts":        lifePosts,
-		"HasBoth":          hasBoth,
+		"LiteTechPosts":    liteTechPosts,
+		"OthersPosts":      othersPosts,
 		"Nav":              navHome,
 		"HeatmapCells":     cells,
 		"HeatmapDayLabels": dl,
@@ -544,18 +554,18 @@ func (ctx *buildContext) renderAbout() error {
 		return err
 	}
 
-	for _, p := range []struct{ out, src string }{
-		{"about.html", "content/about/about_CN.md"},
-		{"about_EN.html", "content/about/about_EN.md"},
+	for _, p := range []struct{ out, src, lang string }{
+		{"about.html", "content/about/about_CN.md", "zh-CN"},
+		{"about_EN.html", "content/about/about_EN.md", "en"},
 	} {
-		if err := ctx.renderAboutPage(tmpl, p.out, p.src); err != nil {
+		if err := ctx.renderAboutPage(tmpl, p.out, p.src, p.lang); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (ctx *buildContext) renderAboutPage(tmpl *template.Template, out, src string) error {
+func (ctx *buildContext) renderAboutPage(tmpl *template.Template, out, src, lang string) error {
 	fm, rendered, err := renderMarkdownPage(src, "About")
 	if err != nil {
 		return err
@@ -567,6 +577,7 @@ func (ctx *buildContext) renderAboutPage(tmpl *template.Template, out, src strin
 		"Content":      template.HTML(rendered.html),
 		"HasMermaid":   rendered.hasMermaid,
 		"Nav":          navAbout,
+		"Lang":         lang,
 	}))
 }
 
@@ -841,6 +852,7 @@ var jsFiles = []string{
 	"static/js/header.js",
 	"static/js/toc.js",
 	"static/js/rain.js",
+	"static/js/navigation.js",
 }
 
 func (ctx *buildContext) bundleAssets() error {

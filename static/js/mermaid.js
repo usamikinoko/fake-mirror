@@ -1,8 +1,20 @@
 (function () {
   var initialized = false;
+  var loading = false;
 
   function run() {
-    if (typeof mermaid === "undefined") return;
+    if (!document.querySelector("pre.mermaid")) return;
+    if (typeof mermaid === "undefined") {
+      if (loading) return;
+      loading = true;
+      var script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js";
+      script.async = true;
+      script.onload = function () { loading = false; run(); };
+      script.onerror = function () { loading = false; script.remove(); };
+      document.head.appendChild(script);
+      return;
+    }
     if (!initialized) {
       mermaid.initialize({
         startOnLoad: false,
@@ -11,10 +23,7 @@
       });
       initialized = true;
     }
-
-    if (document.querySelector("pre.mermaid")) {
-      mermaid.run({ querySelector: "pre.mermaid" });
-    }
+    mermaid.run({ querySelector: "pre.mermaid" });
   }
 
   window.initMermaidDiagrams = run;

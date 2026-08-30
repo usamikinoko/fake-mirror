@@ -1,4 +1,7 @@
-document.querySelectorAll(".image-layout-carousel").forEach((root) => {
+(function () {
+  function init(root) {
+  if (root.dataset.carouselReady === "true") return;
+  root.dataset.carouselReady = "true";
   const slides = Array.from(root.querySelectorAll(".slide"));
   if (slides.length === 0) return;
   const thumbs = root.dataset.thumbnails === "true";
@@ -50,4 +53,10 @@ document.querySelectorAll(".image-layout-carousel").forEach((root) => {
 
   if (thumbs) thumbStrip.children[0]?.classList.add("active");
   else pills.children[0]?.classList.add("active");
-});
+  }
+
+  window.initImageLayoutCarousels = function () {
+    document.querySelectorAll(".image-layout-carousel").forEach(init);
+  };
+  window.initImageLayoutCarousels();
+})();

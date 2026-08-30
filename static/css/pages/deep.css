@@ -41,8 +41,15 @@
     transition: border-color 0.15s;
 }
 
-.auth-input:focus {
+.auth-label {
+    color: var(--text-muted);
+    font-size: 0.9em;
+}
+
+.auth-input:focus-visible {
     border-bottom-color: var(--primary-color);
+    outline: 2px solid var(--primary-color);
+    outline-offset: 4px;
 }
 
 .auth-submit {

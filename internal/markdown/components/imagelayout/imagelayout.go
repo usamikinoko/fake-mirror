@@ -274,6 +274,17 @@ func splitSegs(segs []string) (alt string, _ int) {
 	return strings.Join(altParts, "|"), 0
 }
 
+func isSafeImagePath(s string) bool {
+	if s == "" || strings.IndexByte(s, 0) >= 0 {
+		return false
+	}
+	clean := filepath.Clean(filepath.FromSlash(s))
+	if filepath.IsAbs(clean) || clean == "." || clean == ".." || strings.HasPrefix(clean, ".."+string(filepath.Separator)) {
+		return false
+	}
+	return clean == filepath.FromSlash(s) || filepath.ToSlash(clean) == strings.TrimPrefix(s, "./")
+}
+
 func decodePath(s string) string {
 	if !strings.Contains(s, "%") {
 		return s
@@ -385,6 +396,10 @@ func intV(m map[string]interface{}, key string) int {
 }
 
 func folderImages(folder string, o options) []image {
+	if !isSafeImagePath(folder) {
+		log.Printf("[image-layout] invalid fromFolder %q", folder)
+		return nil
+	}
 	dir := filepath.Join(imageRootDir, filepath.FromSlash(folder))
 	entries, err := os.ReadDir(dir)
 	if err != nil {

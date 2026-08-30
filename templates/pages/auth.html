@@ -4,13 +4,15 @@
         <h2 class="auth-title">Private Access</h2>
         <p class="auth-desc">此区域仅对受邀访客开放，请输入访问口令</p>
         <form class="auth-form" id="deep-auth-form">
+            <label class="auth-label" for="deep-auth-input">访问口令</label>
             <input
                 class="auth-input"
                 id="deep-auth-input"
                 type="password"
                 inputmode="numeric"
-                autocomplete="off"
+                autocomplete="current-password"
                 placeholder="访问口令"
+                required
                 maxlength="32"
             />
             <button class="auth-submit" type="submit">验证</button>

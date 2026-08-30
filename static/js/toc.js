@@ -37,7 +37,10 @@
       a.addEventListener("click", function (v) {
         v.preventDefault();
         var d = document.getElementById(this.getAttribute("href").slice(1));
-        if (d) d.scrollIntoView({ behavior: "smooth", block: "start" });
+        if (d) d.scrollIntoView({
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+          block: "start",
+        });
       });
       li.appendChild(a);
       l.appendChild(li);
@@ -62,5 +65,6 @@
     for (var m = 0; m < h.length; m++) observer.observe(h[m]);
     t.style.display = "block";
   }
+  window.initPostTOC = R;
   document.addEventListener("DOMContentLoaded", R);
 })();

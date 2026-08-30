@@ -20,13 +20,17 @@ import (
 	"github.com/yuin/goldmark/util"
 )
 
-type CodeBlock struct{}
+// Extension 是 rainhush 的 goldmark 扩展：注册代码块渲染器（Chroma 高亮 /
+// Mermaid / 组件与插件围栏）与图片渲染器（尺寸注入 + 懒加载）。
+type Extension struct{}
 
-var CodeBlockExt = &CodeBlock{}
+// Ext 是注册到 goldmark 的扩展实例。
+var Ext = &Extension{}
 
-func (e *CodeBlock) Extend(m goldmark.Markdown) {
+func (e *Extension) Extend(m goldmark.Markdown) {
 	m.Renderer().AddOptions(renderer.WithNodeRenderers(
 		util.Prioritized(&codeBlockRenderer{}, 0),
+		util.Prioritized(&imageRenderer{}, 0),
 	))
 }
 
@@ -90,7 +94,7 @@ func (r *codeBlockRenderer) renderFencedCodeBlock(w util.BufWriter, source []byt
 	w.WriteString(`</span>`)
 	w.WriteString(`</div>`)
 	w.WriteString(`<div class="code-block-header-right">`)
-	w.WriteString(`<button class="copy-btn" onclick="copyCode(this)" title="Copy code">`)
+	w.WriteString(`<button class="copy-btn" type="button" onclick="copyCode(this)" aria-label="Copy code" title="Copy code">`)
 	w.WriteString(`<svg class="copy-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`)
 	w.WriteString(`<span class="copy-text">Copy</span>`)
 	w.WriteString(`</button>`)

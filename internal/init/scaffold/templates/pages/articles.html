@@ -1,14 +1,14 @@
 {{define "content"}}
 <div class="container">
 <div class="articles-header">
-    <h2>Articles</h2>
+    <h1>Articles</h1>
     <span class="articles-count">{{.TotalPosts}} posts</span>
 </div>
 {{if .Posts}}
 {{range .Posts}}
 <article class="post-list-item">
     <a href="/articles/{{.Filename}}/">{{.Title}}</a>
-    {{if .Date}}<time>{{.Date}}</time>{{end}}
+    {{if .Date}}<time datetime="{{.Date}}">{{.Date}}</time>{{end}}
 </article>
 {{end}}
 <div class="pagination">

@@ -21,11 +21,12 @@ func Serve(ctx context.Context) error {
 	mux.Handle("/", cacheMiddleware(fs))
 
 	srv := &http.Server{
-		Addr:         ":" + port,
-		Handler:      mux,
-		ReadTimeout:  15 * time.Second,
-		WriteTimeout: 30 * time.Second,
-		IdleTimeout:  60 * time.Second,
+		Addr:           "127.0.0.1:" + port,
+		Handler:        securityHeaders(mux),
+		ReadTimeout:    15 * time.Second,
+		WriteTimeout:    30 * time.Second,
+		IdleTimeout:     60 * time.Second,
+		MaxHeaderBytes:  1 << 20,
 	}
 
 	shutdownCtx, stop := signal.NotifyContext(ctx, os.Interrupt)
@@ -47,6 +48,14 @@ func Serve(ctx context.Context) error {
 
 	fmt.Println("\nServer stopped.")
 	return nil
+}
+
+func securityHeaders(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
+		next.ServeHTTP(w, r)
+	})
 }
 
 func cacheMiddleware(next http.Handler) http.Handler {

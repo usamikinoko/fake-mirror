@@ -143,6 +143,15 @@ footer {
     flex-shrink: 0;
 }
 
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.001ms !important;
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}
+
 @media (max-width: 480px) {
     .footer-inner {
         flex-direction: column;

@@ -15,11 +15,10 @@
         <p class="home-hero-owner">{{.Home.Owner}}</p>
         <div class="home-hero-divider"></div>
     </div>
-    {{if or .TechPosts .LifePosts}}
-    <div class="home-posts {{if .HasBoth}}home-posts--cols{{end}}">
-        {{if .TechPosts}}
+    {{if or .TechPosts .LifePosts .LiteTechPosts .OthersPosts}}
+    <div class="home-posts home-posts--cols">
         <section class="home-posts-col">
-            <h2 class="home-posts-col-title">Technology</h2>
+            <h2 class="home-posts-col-title">Tech</h2>
             {{range .TechPosts}}
             <article class="post-item">
                 <div class="post-item-row">
@@ -34,8 +33,26 @@
                 </div>
             </article>
             {{end}}
+            {{if not .TechPosts}}<p class="home-posts-col-empty">No posts yet.</p>{{end}}
         </section>
-        {{end}} {{if .LifePosts}}
+        <section class="home-posts-col">
+            <h2 class="home-posts-col-title">Lite Tech</h2>
+            {{range .LiteTechPosts}}
+            <article class="post-item">
+                <div class="post-item-row">
+                    <h3><a class="post-item-title" href="/articles/{{.Filename}}/">{{.Title}}</a></h3>
+                    {{if .Date}}<time>{{.Date}}</time>{{end}}
+                </div>
+                {{if .Excerpt}}
+                <p class="excerpt">{{.Excerpt}}</p>
+                {{end}}
+                <div class="post-item-more">
+                    <a href="/articles/{{.Filename}}/">Read More</a>
+                </div>
+            </article>
+            {{end}}
+            {{if not .LiteTechPosts}}<p class="home-posts-col-empty">No posts yet.</p>{{end}}
+        </section>
         <section class="home-posts-col">
             <h2 class="home-posts-col-title">Life</h2>
             {{range .LifePosts}}
@@ -52,8 +69,26 @@
                 </div>
             </article>
             {{end}}
+            {{if not .LifePosts}}<p class="home-posts-col-empty">No posts yet.</p>{{end}}
         </section>
-        {{end}}
+        <section class="home-posts-col">
+            <h2 class="home-posts-col-title">Others</h2>
+            {{range .OthersPosts}}
+            <article class="post-item">
+                <div class="post-item-row">
+                    <h3><a class="post-item-title" href="/articles/{{.Filename}}/">{{.Title}}</a></h3>
+                    {{if .Date}}<time>{{.Date}}</time>{{end}}
+                </div>
+                {{if .Excerpt}}
+                <p class="excerpt">{{.Excerpt}}</p>
+                {{end}}
+                <div class="post-item-more">
+                    <a href="/articles/{{.Filename}}/">Read More</a>
+                </div>
+            </article>
+            {{end}}
+            {{if not .OthersPosts}}<p class="home-posts-col-empty">No posts yet.</p>{{end}}
+        </section>
     </div>
     <div class="home-readmore">
         <a href="/articles.html">More Articles</a>

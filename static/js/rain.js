@@ -7,6 +7,9 @@
   var cw = 0;
   var ch = 0;
   var frameId = 0;
+  var color = "";
+  var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var saveData = navigator.connection && navigator.connection.saveData;
   var WIND = 0;
   var LEN_MIN = 8;
   var LEN_RANGE = 18;
@@ -22,7 +25,7 @@
   }
 
   function shouldAnimate() {
-    return !document.hidden && window.innerWidth >= 768 && getDropCount() > 0;
+    return !reducedMotion && !saveData && !document.hidden && window.innerWidth >= 768 && getDropCount() > 0;
   }
 
   function resize() {
@@ -71,7 +74,7 @@
   }
 
   function draw() {
-    var color = getColor();
+    if (!color) color = getColor();
     ctx.clearRect(0, 0, cw, ch);
 
     for (var i = 0; i < drops.length; i++) {
@@ -147,5 +150,6 @@
 
   window.addEventListener("resize", sync);
   document.addEventListener("visibilitychange", sync);
+  window.addEventListener("themechange", function () { color = getColor(); });
   sync();
 })();
