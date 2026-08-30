@@ -66,5 +66,6 @@
     t.style.display = "block";
   }
   window.initPostTOC = R;
-  document.addEventListener("DOMContentLoaded", R);
+  if (window.registerPageInit) window.registerPageInit(R);
+  else document.addEventListener("DOMContentLoaded", R);
 })();

@@ -49,11 +49,12 @@ type DeployConfig struct {
 }
 
 type Config struct {
-	Server ServerConfig `yaml:"server"`
-	Site   SiteConfig   `yaml:"site"`
-	Home   HomeConfig   `yaml:"home"`
-	Deep   DeepConfig   `yaml:"deep"`
-	Deploy DeployConfig `yaml:"deploy"`
+	Server     ServerConfig    `yaml:"server"`
+	Site       SiteConfig      `yaml:"site"`
+	Home       HomeConfig      `yaml:"home"`
+	Deep       DeepConfig      `yaml:"deep"`
+	Deploy     DeployConfig    `yaml:"deploy"`
+	Extensions map[string]bool `yaml:"extensions"`
 }
 
 var Cfg *Config
@@ -107,4 +108,14 @@ func Load() error {
 	}
 
 	return nil
+}
+
+// ExtensionEnabled reports whether an extension participates in the build.
+// An omitted entry is enabled for backwards compatibility; only false disables it.
+func ExtensionEnabled(name string) bool {
+	if Cfg == nil || Cfg.Extensions == nil {
+		return true
+	}
+	enabled, exists := Cfg.Extensions[strings.TrimSpace(name)]
+	return !exists || enabled
 }

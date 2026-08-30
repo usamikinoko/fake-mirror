@@ -1,3 +1,12 @@
+.extension-error {
+    margin: 1rem 0;
+    padding: 0.75rem 1rem;
+    border-left: 3px solid #d97706;
+    border-radius: var(--radius-base);
+    background: color-mix(in srgb, #d97706 12%, var(--card-bg));
+    color: var(--text-color);
+}
+
 .code-block {
     margin: 16px 0;
     border: 1px solid var(--border-color);

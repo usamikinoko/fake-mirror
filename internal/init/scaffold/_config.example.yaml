@@ -1,4 +1,4 @@
-﻿server:
+server:
   port: 8080
 
 site:
@@ -11,6 +11,10 @@ home:
   subtitle: 雨静 · 书写技术与生活
   avatar: https://img.kinoko.fun/fake-mirror/image-20260505193500896.png?imageSlim
   owner: Hypokinoko
+
+# Extensions are enabled by default. Set a registered extension to false to disable it.
+extensions:
+  better-friends: true
 
 deploy:
   mode: git

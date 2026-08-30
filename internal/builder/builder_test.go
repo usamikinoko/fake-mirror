@@ -33,22 +33,6 @@ func TestPrepareOutputDirPreservesGitDirectory(t *testing.T) {
 	}
 }
 
-func TestContainsMermaidFence(t *testing.T) {
-	t.Run("detects mermaid code fences", func(t *testing.T) {
-		body := "```mermaid\ngraph TD;\nA-->B\n```"
-		if !containsMermaidFence(body) {
-			t.Fatal("expected mermaid fence to be detected")
-		}
-	})
-
-	t.Run("ignores plain text mentions", func(t *testing.T) {
-		body := "This post talks about mermaid diagrams but does not embed one."
-		if containsMermaidFence(body) {
-			t.Fatal("did not expect plain text to trigger mermaid loading")
-		}
-	})
-}
-
 func TestRenderMarkdownPreservesTrustedHTML(t *testing.T) {
 	rendered, err := renderMarkdown("<table><tr><td>ok</td></tr></table>")
 	if err != nil {
@@ -69,8 +53,5 @@ func TestRenderMarkdownPageMissingFileFallsBackToEmptyPage(t *testing.T) {
 	}
 	if rendered.html != "" {
 		t.Fatalf("expected empty rendered content, got %q", rendered.html)
-	}
-	if rendered.hasMermaid {
-		t.Fatal("did not expect mermaid flag for missing file")
 	}
 }

@@ -1,4 +1,4 @@
-﻿server:
+server:
   port: 8080
 
 site:
@@ -16,6 +16,10 @@ deep:
   enabled: true
   password: change-me
   sign: change-me-to-a-long-random-string
+
+# Extensions are enabled by default. Set a registered extension to false to disable it.
+extensions:
+  better-friends: true
 
 deploy:
   mode: git

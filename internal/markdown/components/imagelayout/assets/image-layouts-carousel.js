@@ -58,5 +58,6 @@
   window.initImageLayoutCarousels = function () {
     document.querySelectorAll(".image-layout-carousel").forEach(init);
   };
-  window.initImageLayoutCarousels();
+  if (window.registerPageInit) window.registerPageInit(window.initImageLayoutCarousels);
+  else document.addEventListener("DOMContentLoaded", window.initImageLayoutCarousels);
 })();

@@ -18,11 +18,10 @@ import (
 
 	"rainhush/internal/config"
 	"rainhush/internal/markdown"
-	"rainhush/internal/markdown/components"
-	"rainhush/internal/plugins"
+	"rainhush/pkg/extension"
 
 	"github.com/yuin/goldmark"
-	"github.com/yuin/goldmark/extension"
+	goldmarkext "github.com/yuin/goldmark/extension"
 	goldmarkhtml "github.com/yuin/goldmark/renderer/html"
 	"gopkg.in/yaml.v3"
 )
@@ -45,7 +44,6 @@ type Post struct {
 	Content     template.HTML
 	Filename    string
 	Excerpt     string
-	HasMermaid  bool
 	PublishedAt time.Time
 }
 
@@ -69,8 +67,7 @@ type heatmapMonth struct {
 }
 
 type renderedMarkdown struct {
-	html       string
-	hasMermaid bool
+	html string
 }
 
 type buildContext struct {
@@ -83,7 +80,7 @@ type buildContext struct {
 // 不应用于不受信任的用户输入。
 var md = goldmark.New(
 	goldmark.WithExtensions(
-		extension.Table,
+		goldmarkext.Table,
 		markdown.Ext,
 	),
 	goldmark.WithRendererOptions(goldmarkhtml.WithUnsafe()),
@@ -128,11 +125,11 @@ var (
 )
 
 func Build() error {
-	if names := components.String(); names != "" {
-		fmt.Printf("Components: %s\n", names)
+	for _, name := range extension.Default.Names() {
+		extension.SetEnabled(name, config.ExtensionEnabled(name))
 	}
-	if names := plugins.String(); names != "" {
-		fmt.Printf("Plugins: %s\n", names)
+	if names := extension.Default.String(); names != "" {
+		fmt.Printf("Extensions: %s\n", names)
 	}
 	if err := prepareOutputDir("public"); err != nil {
 		return fmt.Errorf("prepare public directory: %w", err)
@@ -332,7 +329,6 @@ func parsePost(path string) (*Post, error) {
 		Content:     template.HTML(rendered.html),
 		Filename:    filename,
 		Excerpt:     extractExcerpt(body),
-		HasMermaid:  rendered.hasMermaid,
 		PublishedAt: publishedAt,
 	}, nil
 }
@@ -398,14 +394,7 @@ func renderMarkdown(body string) (renderedMarkdown, error) {
 		return renderedMarkdown{}, err
 	}
 
-	return renderedMarkdown{
-		html:       buf.String(),
-		hasMermaid: containsMermaidFence(body),
-	}, nil
-}
-
-func containsMermaidFence(body string) bool {
-	return mermaidFenceRe.MatchString(body)
+	return renderedMarkdown{html: buf.String()}, nil
 }
 
 func (ctx *buildContext) renderPost(tmpl *template.Template, post *Post) error {
@@ -425,7 +414,6 @@ func (ctx *buildContext) renderPost(tmpl *template.Template, post *Post) error {
 		"Avatar":       post.Avatar,
 		"Cover":        post.Cover,
 		"Content":      post.Content,
-		"HasMermaid":   post.HasMermaid,
 		"Nav":          navArticles,
 	}))
 }
@@ -575,7 +563,6 @@ func (ctx *buildContext) renderAboutPage(tmpl *template.Template, out, src, lang
 		"CanonicalURL": canonicalURL,
 		"Title":        fm.Title,
 		"Content":      template.HTML(rendered.html),
-		"HasMermaid":   rendered.hasMermaid,
 		"Nav":          navAbout,
 		"Lang":         lang,
 	}))
@@ -600,7 +587,6 @@ func (ctx *buildContext) renderFriends() error {
 		"CanonicalURL": canonicalURL,
 		"Title":        fm.Title,
 		"Content":      template.HTML(rendered.html),
-		"HasMermaid":   rendered.hasMermaid,
 		"Nav":          navFriends,
 	}))
 }
@@ -847,6 +833,7 @@ var cssFiles = []string{
 }
 
 var jsFiles = []string{
+	"static/js/lifecycle.js",
 	"static/js/code.js",
 	"static/js/mermaid.js",
 	"static/js/header.js",
@@ -865,11 +852,7 @@ func (ctx *buildContext) bundleAssets() error {
 		buf.Write(data)
 		buf.WriteByte('\n')
 	}
-	for _, c := range components.CSS() {
-		buf.Write(c)
-		buf.WriteByte('\n')
-	}
-	for _, c := range plugins.CSS() {
+	for _, c := range extension.Default.CSS() {
 		buf.Write(c)
 		buf.WriteByte('\n')
 	}
@@ -890,11 +873,7 @@ func (ctx *buildContext) bundleAssets() error {
 		buf.Write(data)
 		buf.Write([]byte{';', '\n'})
 	}
-	for _, j := range components.JS() {
-		buf.Write(j)
-		buf.Write([]byte{';', '\n'})
-	}
-	for _, j := range plugins.JS() {
+	for _, j := range extension.Default.JS() {
 		buf.Write(j)
 		buf.Write([]byte{';', '\n'})
 	}
@@ -1034,9 +1013,8 @@ func truncateText(text string, maxLen int) string {
 }
 
 var (
-	htmlBlockRe    = regexp.MustCompile(`(?is)<pre\b[^>]*>.*?</pre>|<textarea\b[^>]*>.*?</textarea>|<script\b[^>]*>.*?</script>|<style\b[^>]*>.*?</style>`)
-	htmlTagWS      = regexp.MustCompile(`>\s+<`)
-	mermaidFenceRe = regexp.MustCompile("(?m)^\\s*(?:```|~~~)\\s*mermaid(?:\\s+.*)?\\s*$")
+	htmlBlockRe = regexp.MustCompile(`(?is)<pre\b[^>]*>.*?</pre>|<textarea\b[^>]*>.*?</textarea>|<script\b[^>]*>.*?</script>|<style\b[^>]*>.*?</style>`)
+	htmlTagWS   = regexp.MustCompile(`>\s+<`)
 )
 
 var blockSentinelFmt = "\x01BLOCK%04d\x01"

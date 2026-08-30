@@ -25,9 +25,6 @@
     document.title = doc.title;
     document.documentElement.lang = doc.documentElement.lang || "zh-CN";
     window.dispatchEvent(new Event("pagechange"));
-    if (window.initPostTOC) window.initPostTOC();
-    if (window.initMermaidDiagrams) window.initMermaidDiagrams();
-    if (window.initImageLayoutCarousels) window.initImageLayoutCarousels();
     if (window.syncThemeButton) {
       window.syncThemeButton(document.documentElement.getAttribute("data-theme") || "dark");
     }

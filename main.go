@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	_ "rainhush/extensions"
 	"rainhush/internal/builder"
 	"rainhush/internal/config"
 	initpkg "rainhush/internal/init"

@@ -18,7 +18,7 @@ import (
 	"strings"
 	"time"
 
-	"rainhush/internal/markdown/components"
+	"rainhush/pkg/extension"
 
 	"gopkg.in/yaml.v3"
 )
@@ -34,9 +34,9 @@ var loaderJSAsset []byte
 
 type component struct{}
 
-var _ components.Component = (*component)(nil)
+var _ extension.Extension = (*component)(nil)
 
-func init() { components.Register(&component{}) }
+func init() { extension.Register(&component{}, 100) }
 
 func (c *component) Name() string { return "image-layout" }
 
@@ -114,9 +114,18 @@ type customGrid struct {
 	areas   string
 }
 
-// Render 处理 image-layout 系列围栏代码块；doc 是当前渲染文档路径（仅用于日志）。
-// 返回 ok=true 表示已接管渲染，false 表示非本语法，应交由默认渲染器。
-func (c *component) Render(lang string, content string, doc string) (string, bool) {
+// RenderFence 处理 image-layout 系列围栏代码块。返回 handled=false 表示非本语法。
+func (c *component) RenderFence(lang string, content string, ctx extension.Context) (string, bool, error) {
+	out, handled := c.render(lang, content, ctx.Document)
+	return out, handled, nil
+}
+
+// Render preserves the former built-in component method for internal callers and tests.
+func (c *component) Render(lang string, content string, document string) (string, bool) {
+	return c.render(lang, content, document)
+}
+
+func (c *component) render(lang string, content string, doc string) (string, bool) {
 	suffix, ok := parseFenceLang(lang)
 	if !ok {
 		return "", false

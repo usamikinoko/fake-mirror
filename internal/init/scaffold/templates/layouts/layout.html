@@ -70,14 +70,6 @@
                 window.dispatchEvent(new Event("themechange"));
             }
         </script>
-        {{if .HasMermaid}}
-        <script
-            src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"
-            defer
-            crossorigin="anonymous"
-            onerror="this.remove()"
-        ></script>
-        {{end}}
         {{if .DeepJS}}<script src="{{.DeepJS}}" defer></script>{{end}}
         <script src="{{.BundleJS}}" defer></script>
     </head>

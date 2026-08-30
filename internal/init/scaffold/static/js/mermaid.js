@@ -27,5 +27,6 @@
   }
 
   window.initMermaidDiagrams = run;
-  document.addEventListener("DOMContentLoaded", run);
+  if (window.registerPageInit) window.registerPageInit(run);
+  else document.addEventListener("DOMContentLoaded", run);
 })();

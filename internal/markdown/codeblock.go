@@ -5,8 +5,7 @@ import (
 	stdhtml "html"
 	"strings"
 
-	"rainhush/internal/markdown/components"
-	"rainhush/internal/plugins"
+	"rainhush/pkg/extension"
 
 	_ "rainhush/internal/markdown/components/imagelayout"
 
@@ -73,11 +72,7 @@ func (r *codeBlockRenderer) renderFencedCodeBlock(w util.BufWriter, source []byt
 	rawCodeStr := strings.TrimLeft(string(rawCode), "\n\r\t ")
 
 	doc := Document()
-	if out, ok := components.RenderFence(lang, rawCodeStr, doc); ok {
-		w.WriteString(out)
-		return ast.WalkSkipChildren, nil
-	}
-	if out, ok := plugins.RenderFence(lang, rawCodeStr, plugins.Context{Document: doc}); ok {
+	if out, ok := extension.Default.RenderFence(lang, rawCodeStr, extension.Context{Document: doc}); ok {
 		w.WriteString(out)
 		return ast.WalkSkipChildren, nil
 	}
